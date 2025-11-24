@@ -1,74 +1,71 @@
-# EPML DA ITMO - Домашние работы
+# Data Science Project
 
-Репозиторий с домашними работами по курсу Data Science.
+ДЗ 1: Настройка рабочего места Data Scientist.
 
-## Структура репозитория
+## Структура
 
-Каждая домашняя работа находится в отдельной ветке:
-
-- `hw1` - ДЗ 1: Настройка рабочего места Data Scientist
-- `hw2` - ДЗ 2: (будет добавлено позже)
-- `hw3` - ДЗ 3: (будет добавлено позже)
-
-## Как переключаться между ДЗ
-
-```bash
-# Посмотреть все ветки
-git branch -a
-
-# Переключиться на ДЗ 1
-git checkout hw1
-
-# Переключиться на ДЗ 2
-git checkout hw2
-
-# Вернуться в основную ветку
-git checkout master
+```
+.
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── interim/
+├── notebooks/
+├── src/
+│   ├── data/
+│   ├── features/
+│   ├── models/
+│   └── visualization/
+├── tests/
+├── reports/
+│   └── figures/
+└── models/
 ```
 
-## Как проверить домашнюю работу
+## Установка
 
-1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/kragger-ra/EPML_DA_ITMO_HW_Repo
-   cd EPML_DA_ITMO_HW_Repo
-   ```
-
-2. Переключитесь на нужную ветку:
-   ```bash
-   git checkout hw1
-   ```
-
-3. Следуйте инструкциям в README.md конкретной ветки
-
-## Список домашних работ
-
-### ДЗ 1: Настройка рабочего места Data Scientist
-**Ветка:** `hw1`
-**Статус:** Выполнено
-**Дата сдачи:** 24 ноября 2025
-
-**Содержание:**
-- Структура проекта Data Science
-- Настройка pixi для управления зависимостями
-- Настройка pre-commit hooks (Black, isort, Ruff, MyPy, Bandit)
-- Dockerfile для контейнеризации
-- Git workflow
-
-**Команды для проверки:**
 ```bash
-git checkout hw1
-cat REPORT.md  # Подробный отчет
-cat QUICKSTART.md  # Быстрый старт
+# Windows
+iwr -useb https://pixi.sh/install.ps1 | iex
+
+# Установка зависимостей
+pixi install
+
+# Настройка pre-commit
+pixi run pre-commit install
 ```
+
+## Использование
+
+```bash
+pixi run jupyter      # Запуск Jupyter
+pixi run test         # Тесты
+pixi run format       # Форматирование (Black, isort)
+pixi run lint         # Линтинг (Ruff)
+pixi run typecheck    # Проверка типов (MyPy)
+pixi run security     # Проверка безопасности (Bandit)
+```
+
+## Docker
+
+```bash
+docker build -t ds-project .
+docker run -it --rm -v ${PWD}:/workspace ds-project
+```
+
+## Инструменты
+
+- **Управление зависимостями:** pixi
+- **Форматирование:** Black, isort
+- **Линтинг:** Ruff, MyPy, Bandit
+- **Pre-commit hooks:** автоматические проверки перед коммитом
+
+## Документация
+
+- [REPORT.md](REPORT.md) - подробный отчет
+- [QUICKSTART.md](QUICKSTART.md) - быстрый старт
 
 ---
 
-## Автор
-
-Студент ITMO University
-Курс: Enterprise ML & Data Analytics
-
-## Репозиторий
-
-https://github.com/kragger-ra/EPML_DA_ITMO_HW_Repo
+**Репозиторий:** https://github.com/kragger-ra/EPML_DA_ITMO_HW_Repo
+**Ветка:** HW_1
