@@ -100,6 +100,10 @@ reports/figures/*
 *.log
 logs/
 
+# MLflow
+mlruns/
+mlartifacts/
+
 # Environment variables
 .env.local
 .env.*.local
