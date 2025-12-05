@@ -29,6 +29,9 @@ COPY pixi.toml pixi.lock pyproject.toml ./
 COPY src ./src
 COPY tests ./tests
 COPY notebooks ./notebooks
+COPY params.yaml dvc.yaml ./
+COPY .dvc .dvc/
+COPY data/raw/*.dvc data/raw/ 2>/dev/null || true
 
 # Install dependencies using pixi
 RUN pixi install

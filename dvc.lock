@@ -1,0 +1,92 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: pixi run python src/data/preprocess.py
+    deps:
+    - path: data/raw/customer_churn.csv
+      hash: md5
+      md5: 3b0bfab28a8101b4e4fdd08025a5c235
+      size: 970457
+    - path: src/data/preprocess.py
+      hash: md5
+      md5: 8ac4d72e900b018be96880f13d84f6e2
+      size: 1894
+    params:
+      params.yaml:
+        data:
+          test_size: 0.2
+          random_state: 42
+        features:
+          categorical:
+          - gender
+          - Partner
+          - Dependents
+          - PhoneService
+          - InternetService
+          - Contract
+          numerical:
+          - tenure
+          - MonthlyCharges
+          - TotalCharges
+    outs:
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: 3547689e7fed2a9723c920c8a7229674
+      size: 39991
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: 638953dc619701e4f724c0388f6d5dca
+      size: 159965
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: 201501840c586317ad0f805ea0d84683
+      size: 4234
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 926d3a60b321ffecd9e602d5d259a705
+      size: 16909
+  train:
+    cmd: pixi run python src/models/train.py
+    deps:
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: 3547689e7fed2a9723c920c8a7229674
+      size: 39991
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: 638953dc619701e4f724c0388f6d5dca
+      size: 159965
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: 201501840c586317ad0f805ea0d84683
+      size: 4234
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 926d3a60b321ffecd9e602d5d259a705
+      size: 16909
+    - path: src/models/train.py
+      hash: md5
+      md5: 2e4432eb493c53f3793c4f15483fbbc7
+      size: 1785
+    params:
+      params.yaml:
+        model:
+          type: lightgbm
+          params:
+            num_leaves: 31
+            learning_rate: 0.05
+            n_estimators: 100
+            max_depth: -1
+            min_child_samples: 20
+            subsample: 0.8
+            colsample_bytree: 0.8
+            random_state: 42
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 9e27eada58631888d0de7cecb8844c3f
+      size: 113
+    - path: models/churn_model.pkl
+      hash: md5
+      md5: d72bd5131ed6990cbd678b9024f0d3e2
+      size: 344740
