@@ -24,14 +24,16 @@ ENV PATH="/root/.pixi/bin:$PATH"
 # Set working directory
 WORKDIR /workspace
 
-# Copy project files
+# Copy dependency files first
 COPY pixi.toml pixi.lock pyproject.toml ./
-COPY src ./src
-COPY tests ./tests
-COPY notebooks ./notebooks
 
 # Install dependencies using pixi
 RUN pixi install
+
+# Copy project files
+COPY src ./src
+COPY tests ./tests
+COPY notebooks ./notebooks
 
 # Create data directories
 RUN mkdir -p data/raw data/processed data/interim models reports/figures
