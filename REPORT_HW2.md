@@ -34,6 +34,8 @@ pixi install
     url = N:/HW/dvc-storage
 ```
 
+![DVC Remote Configuration](screenshots/1.png)
+
 ### Версионирование данных
 
 Датасет: Telco Customer Churn (IBM)
@@ -56,6 +58,8 @@ outs:
   path: customer_churn.csv
 ```
 
+![DVC Data Versioning](screenshots/2.png)
+
 ## 2. Настройка DVC для моделей (3 балла)
 
 ### DVC Pipeline
@@ -67,6 +71,8 @@ outs:
 ```bash
 .pixi/envs/default/python.exe -m dvc repro
 ```
+
+![DVC Pipeline](screenshots/3.png)
 
 ### Параметры модели
 
@@ -103,6 +109,8 @@ features:
     - TotalCharges
 ```
 
+![Model Parameters](screenshots/4.png)
+
 ### Метрики
 
 Файл `metrics.json`:
@@ -121,6 +129,8 @@ features:
 .pixi/envs/default/python.exe -m dvc metrics show
 .pixi/envs/default/python.exe -m dvc dag
 ```
+
+![Metrics](screenshots/5.png)
 
 ### Версионирование модели
 
@@ -167,6 +177,12 @@ pixi install
 .pixi/envs/default/python.exe -m dvc metrics show
 ```
 
+### Тестирование воспроизводимости
+
+Автоматические тесты проверяют корректность воспроизведения результатов:
+
+![Reproducibility Tests](screenshots/7.png)
+
 ### Docker
 
 Обновлен `Dockerfile` для поддержки DVC. Сборка и запуск:
@@ -206,13 +222,4 @@ docker run -it --rm -v ${PWD}:/workspace ds-project:hw2
 └── REPORT_HW2.md
 ```
 
-## Выводы
-
-DVC обеспечивает:
-1. Версионирование больших файлов данных отдельно от кода
-2. Хранение моделей в remote storage
-3. Воспроизводимые ML pipelines
-4. Отслеживание параметров и метрик экспериментов
-5. Упрощение совместной работы над ML проектами
-
-Все требования HW_2 выполнены.
+![Project Structure](screenshots/6.png)
