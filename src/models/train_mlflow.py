@@ -1,21 +1,14 @@
-"""Train models with MLflow tracking."""
+"""Train models with MLflow tracking for customer churn prediction."""
 
-import argparse
+import json
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-import catboost as cb
-import lightgbm as lgb
+import joblib
 import mlflow
-import mlflow.catboost
-import mlflow.lightgbm
 import mlflow.sklearn
-import mlflow.xgboost
 import pandas as pd
-import xgboost as xgb
 import yaml
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -23,333 +16,112 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.tree import DecisionTreeClassifier
+
+from src.models.model_factory import create_model
+from src.utils.mlflow_utils import (
+    log_metrics_from_dict,
+    log_params_from_dict,
+    setup_mlflow,
+)
 
 
-def load_params() -> dict[str, Any]:
+def load_params(params_path: str = "params.yaml") -> dict[str, Any]:
     """Load parameters from params.yaml."""
-    params_path = Path("params.yaml")
     with open(params_path) as f:
-        return cast(dict[str, Any], yaml.safe_load(f))
+        params: dict[str, Any] = yaml.safe_load(f)
+        return params
 
 
-def load_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Load processed data."""
-    processed_dir = Path("data/processed")
-    X_train = pd.read_csv(processed_dir / "X_train.csv")
-    X_test = pd.read_csv(processed_dir / "X_test.csv")
-    y_train = pd.read_csv(processed_dir / "y_train.csv").values.ravel()
-    y_test = pd.read_csv(processed_dir / "y_test.csv").values.ravel()
+def load_data(processed_dir: str = "data/processed") -> tuple:
+    """Load processed training and test data."""
+    processed_path = Path(processed_dir)
+    X_train = pd.read_csv(processed_path / "X_train.csv")
+    X_test = pd.read_csv(processed_path / "X_test.csv")
+    y_train = pd.read_csv(processed_path / "y_train.csv").values.ravel()
+    y_test = pd.read_csv(processed_path / "y_test.csv").values.ravel()
     return X_train, X_test, y_train, y_test
 
 
-def evaluate_model(
-    model: Any, X_test: pd.DataFrame, y_test: pd.Series
-) -> dict[str, float]:
-    """Evaluate model and return metrics."""
-    y_pred = model.predict(X_test)
-    y_pred_proba = model.predict_proba(X_test)[:, 1]
-
+def calculate_metrics(y_true, y_pred, y_pred_proba) -> dict[str, float]:
+    """Calculate classification metrics."""
     return {
-        "accuracy": float(accuracy_score(y_test, y_pred)),
-        "precision": float(precision_score(y_test, y_pred)),
-        "recall": float(recall_score(y_test, y_pred)),
-        "f1_score": float(f1_score(y_test, y_pred)),
-        "roc_auc": float(roc_auc_score(y_test, y_pred_proba)),
+        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "precision": float(precision_score(y_true, y_pred)),
+        "recall": float(recall_score(y_true, y_pred)),
+        "f1_score": float(f1_score(y_true, y_pred)),
+        "roc_auc": float(roc_auc_score(y_true, y_pred_proba)),
     }
 
 
-def train_logistic_regression(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train Logistic Regression with MLflow tracking."""
-    with mlflow.start_run(run_name="LogisticRegression"):
-        model = LogisticRegression(**params)
-        model.fit(X_train, y_train)
+def train_model_with_mlflow(
+    model_type: str = "lightgbm",
+    run_name: str | None = None,
+    params_path: str = "params.yaml",
+    log_model_artifact: bool = True,
+) -> tuple[Any, dict[str, float]]:
+    """
+    Train model with MLflow tracking.
 
-        metrics = evaluate_model(model, X_test, y_test)
+    Args:
+        model_type: Type of model to train (lightgbm, xgboost, random_forest, etc.)
+        run_name: Name for the MLflow run
+        params_path: Path to parameters file
+        log_model_artifact: Whether to log model as MLflow artifact
 
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.sklearn.log_model(model, "model")
+    Returns:
+        Tuple of (model, metrics)
+    """
+    setup_mlflow()
 
-        print(f"LogisticRegression - Metrics: {metrics}")
-
-
-def train_decision_tree(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train Decision Tree with MLflow tracking."""
-    with mlflow.start_run(run_name="DecisionTree"):
-        model = DecisionTreeClassifier(**params)
-        model.fit(X_train, y_train)
-
-        metrics = evaluate_model(model, X_test, y_test)
-
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.sklearn.log_model(model, "model")
-
-        print(f"DecisionTree - Metrics: {metrics}")
-
-
-def train_random_forest(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train Random Forest with MLflow tracking."""
-    with mlflow.start_run(run_name="RandomForest"):
-        model = RandomForestClassifier(**params)
-        model.fit(X_train, y_train)
-
-        metrics = evaluate_model(model, X_test, y_test)
-
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.sklearn.log_model(model, "model")
-
-        print(f"RandomForest - Metrics: {metrics}")
-
-
-def train_lightgbm(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train LightGBM with MLflow tracking."""
-    with mlflow.start_run(run_name="LightGBM"):
-        model = lgb.LGBMClassifier(**params)
-        model.fit(X_train, y_train)
-
-        metrics = evaluate_model(model, X_test, y_test)
-
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.lightgbm.log_model(model, "model")
-
-        print(f"LightGBM - Metrics: {metrics}")
-
-
-def train_xgboost(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train XGBoost with MLflow tracking."""
-    with mlflow.start_run(run_name="XGBoost"):
-        model = xgb.XGBClassifier(**params)
-        model.fit(X_train, y_train)
-
-        metrics = evaluate_model(model, X_test, y_test)
-
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.xgboost.log_model(model, "model")
-
-        print(f"XGBoost - Metrics: {metrics}")
-
-
-def train_catboost(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-    params: dict[str, Any],
-) -> None:
-    """Train CatBoost with MLflow tracking."""
-    with mlflow.start_run(run_name="CatBoost"):
-        model = cb.CatBoostClassifier(**params, verbose=False)
-        model.fit(X_train, y_train)
-
-        metrics = evaluate_model(model, X_test, y_test)
-
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.catboost.log_model(model, "model")
-
-        print(f"CatBoost - Metrics: {metrics}")
-
-
-def main() -> None:
-    """Main function to run experiments."""
-    parser = argparse.ArgumentParser(description="Train models with MLflow")
-    parser.add_argument(
-        "--experiment",
-        type=str,
-        default="churn-prediction",
-        help="MLflow experiment name",
-    )
-    args = parser.parse_args()
-
-    mlflow.set_experiment(args.experiment)
-    mlflow.set_tracking_uri("file:./mlruns")
-
+    params = load_params(params_path)
     X_train, X_test, y_train, y_test = load_data()
 
-    print("Starting experiments...")
-    print("=" * 80)
+    with mlflow.start_run(run_name=run_name or f"{model_type}_experiment"):
+        mlflow.log_param("model_type", model_type)
+        mlflow.log_param("train_size", len(X_train))
+        mlflow.log_param("test_size", len(X_test))
+        mlflow.log_param("n_features", X_train.shape[1])
 
-    # Logistic Regression experiments
-    train_logistic_regression(
-        X_train, y_train, X_test, y_test, {"max_iter": 1000, "random_state": 42}
-    )
-    train_logistic_regression(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"max_iter": 1000, "C": 0.1, "random_state": 42},
-    )
-    train_logistic_regression(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"max_iter": 1000, "C": 10.0, "random_state": 42},
-    )
+        model_params = params.get("model", {}).get("params", {})
+        log_params_from_dict(model_params, prefix="model.")
 
-    # Decision Tree experiments
-    train_decision_tree(
-        X_train, y_train, X_test, y_test, {"max_depth": 5, "random_state": 42}
-    )
-    train_decision_tree(
-        X_train, y_train, X_test, y_test, {"max_depth": 10, "random_state": 42}
-    )
-    train_decision_tree(
-        X_train, y_train, X_test, y_test, {"max_depth": 20, "random_state": 42}
-    )
+        model = create_model(model_type, model_params)
+        model.fit(X_train, y_train)
 
-    # Random Forest experiments
-    train_random_forest(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"n_estimators": 50, "max_depth": 10, "random_state": 42},
-    )
-    train_random_forest(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"n_estimators": 100, "max_depth": 15, "random_state": 42},
-    )
-    train_random_forest(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"n_estimators": 200, "max_depth": 20, "random_state": 42},
-    )
+        y_pred = model.predict(X_test)
+        y_pred_proba = model.predict_proba(X_test)[:, 1]
 
-    # LightGBM experiments
-    train_lightgbm(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {
-            "num_leaves": 31,
-            "learning_rate": 0.05,
-            "n_estimators": 100,
-            "random_state": 42,
-        },
-    )
-    train_lightgbm(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {
-            "num_leaves": 50,
-            "learning_rate": 0.1,
-            "n_estimators": 150,
-            "random_state": 42,
-        },
-    )
-    train_lightgbm(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {
-            "num_leaves": 20,
-            "learning_rate": 0.01,
-            "n_estimators": 200,
-            "random_state": 42,
-        },
-    )
+        metrics = calculate_metrics(y_test, y_pred, y_pred_proba)
+        log_metrics_from_dict(metrics)
 
-    # XGBoost experiments
-    train_xgboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"max_depth": 6, "learning_rate": 0.1, "n_estimators": 100, "random_state": 42},
-    )
-    train_xgboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {
-            "max_depth": 8,
-            "learning_rate": 0.05,
-            "n_estimators": 150,
-            "random_state": 42,
-        },
-    )
-    train_xgboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"max_depth": 4, "learning_rate": 0.2, "n_estimators": 50, "random_state": 42},
-    )
+        if log_model_artifact:
+            mlflow.sklearn.log_model(model, "model")
 
-    # CatBoost experiments
-    train_catboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"depth": 6, "learning_rate": 0.1, "iterations": 100, "random_state": 42},
-    )
-    train_catboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"depth": 8, "learning_rate": 0.05, "iterations": 150, "random_state": 42},
-    )
-    train_catboost(
-        X_train,
-        y_train,
-        X_test,
-        y_test,
-        {"depth": 4, "learning_rate": 0.2, "iterations": 50, "random_state": 42},
-    )
+            models_dir = Path("models")
+            models_dir.mkdir(parents=True, exist_ok=True)
+            model_path = models_dir / f"{model_type}_model.pkl"
+            joblib.dump(model, model_path)
+            mlflow.log_artifact(str(model_path))
 
-    print("=" * 80)
-    print("All experiments completed!")
-    print("View results: mlflow ui --backend-store-uri file:./mlruns")
+        metrics_path = Path("metrics.json")
+        with open(metrics_path, "w") as f:
+            json.dump(metrics, f, indent=4)
+        mlflow.log_artifact(str(metrics_path))
+
+        print(f"\n{'='*50}")
+        print(f"Model Type: {model_type}")
+        print(f"Run Name: {run_name or f'{model_type}_experiment'}")
+        print(f"{'='*50}")
+        print("Metrics:")
+        for metric_name, metric_value in metrics.items():
+            print(f"  {metric_name}: {metric_value:.4f}")
+        print(f"{'='*50}\n")
+
+        return model, metrics
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    model_type = sys.argv[1] if len(sys.argv) > 1 else "lightgbm"
+    train_model_with_mlflow(model_type=model_type)

@@ -92,6 +92,12 @@ models/*.onnx
 models/*.joblib
 !models/.gitkeep
 
+# MLflow - local storage
+mlruns/
+mlflow.db
+catboost_info/
+params_temp.yaml
+
 # Reports
 reports/figures/*
 !reports/figures/.gitkeep
@@ -99,10 +105,6 @@ reports/figures/*
 # Logs
 *.log
 logs/
-
-# MLflow
-mlruns/
-mlartifacts/
 
 # Environment variables
 .env.local
