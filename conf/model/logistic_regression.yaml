@@ -1,0 +1,8 @@
+type: logistic_regression
+name: LogisticRegression
+params:
+  C: 1.0
+  penalty: l2
+  solver: lbfgs
+  max_iter: 1000
+  random_state: ${project.seed}

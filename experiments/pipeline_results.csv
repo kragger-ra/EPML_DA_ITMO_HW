@@ -1,0 +1,7 @@
+model,status,error
+lightgbm,success,
+xgboost,success,
+catboost,success,
+random_forest,success,
+gradient_boosting,success,
+logistic_regression,failed,"Command '['N:\\HW\\2025 AITH 1-3_EPML_DA_ITMO\\.pixi\\envs\\default\\python.exe', 'src/models/train_hydra.py', 'model=logistic_regression']' returned non-zero exit status 3228369023."

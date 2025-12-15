@@ -30,10 +30,10 @@ def create_model(model_type: str, params: dict[str, Any] | None = None) -> Any:
     models = {
         "lightgbm": lambda: lgb.LGBMClassifier(**params),
         "xgboost": lambda: xgb.XGBClassifier(**params),
-        "catboost": lambda: CatBoostClassifier(**params, verbose=False),
+        "catboost": lambda: CatBoostClassifier(**params),
         "random_forest": lambda: RandomForestClassifier(**params),
         "gradient_boosting": lambda: GradientBoostingClassifier(**params),
-        "logistic_regression": lambda: LogisticRegression(**params, max_iter=1000),
+        "logistic_regression": lambda: LogisticRegression(**params),
         "decision_tree": lambda: DecisionTreeClassifier(**params),
     }
 
@@ -110,5 +110,5 @@ def get_default_params(model_type: str) -> dict[str, Any]:
         },
     }
 
-    result: dict[str, Any] = default_params.get(model_type, {})
-    return result
+    result = default_params.get(model_type, {})
+    return result  # type: ignore[return-value]

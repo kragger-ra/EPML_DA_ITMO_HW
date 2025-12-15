@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   preprocess:
-    cmd: pixi run python src/data/preprocess.py
+    cmd: python src/data/preprocess.py
     deps:
     - path: data/raw/customer_churn.csv
       hash: md5
@@ -9,8 +9,8 @@ stages:
       size: 970457
     - path: src/data/preprocess.py
       hash: md5
-      md5: 8ac4d72e900b018be96880f13d84f6e2
-      size: 1894
+      md5: 81b143c065a884aaa143b8fda03a5917
+      size: 1855
     params:
       params.yaml:
         data:

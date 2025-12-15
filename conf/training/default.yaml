@@ -1,0 +1,17 @@
+metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1_score
+  - roc_auc
+primary_metric: roc_auc
+early_stopping:
+  enabled: false
+  patience: 10
+  min_delta: 0.001
+cross_validation:
+  enabled: false
+  n_folds: 5
+  stratified: true
+save_model: true
+save_predictions: true

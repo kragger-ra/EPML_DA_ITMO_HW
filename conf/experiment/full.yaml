@@ -1,0 +1,14 @@
+name: full_pipeline
+description: "Full pipeline with all models"
+tags:
+  - full
+  - production
+parallel_jobs: -1
+cache_data: true
+models_to_train:
+  - lightgbm
+  - xgboost
+  - catboost
+  - random_forest
+  - gradient_boosting
+  - logistic_regression

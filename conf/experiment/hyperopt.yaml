@@ -1,0 +1,11 @@
+name: hyperparameter_optimization
+description: "Experiment with hyperparameter optimization"
+tags:
+  - hyperopt
+  - tuning
+parallel_jobs: 4
+cache_data: true
+hyperparameter_search:
+  enabled: true
+  n_trials: 20
+  timeout: 3600

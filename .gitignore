@@ -91,6 +91,8 @@ models/*.pth
 models/*.onnx
 models/*.joblib
 !models/.gitkeep
+models/best/*
+!models/best/.gitkeep
 
 # MLflow - local storage
 mlruns/
@@ -101,6 +103,18 @@ params_temp.yaml
 # Reports
 reports/figures/*
 !reports/figures/.gitkeep
+reports/evaluation/*
+!reports/evaluation/.gitkeep
+reports/notifications/*
+!reports/notifications/.gitkeep
+reports/pipeline_report.md
+reports/predictions/*
+!reports/predictions/.gitkeep
+
+# Hydra outputs
+outputs/
+multirun/
+.hydra/
 
 # Logs
 *.log
