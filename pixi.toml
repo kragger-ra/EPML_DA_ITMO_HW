@@ -28,6 +28,9 @@ mlflow-ui = "mlflow ui --backend-store-uri file:./mlruns"
 # Hydra-based training
 train = "python src/models/train_hydra.py"
 train-all = "python src/pipelines/run_all_experiments.py"
+train-clearml = { cmd = "python src/models/train_clearml.py", env = { PYTHONPATH = ".", CLEARML_CONFIG_FILE = "clearml.conf" } }
+
+
 
 # Pipeline execution
 pipeline = "dvc repro"
@@ -38,6 +41,13 @@ pipeline-vis = "dvc dag"
 evaluate = "python src/pipelines/evaluate_models.py"
 select-best = "python src/pipelines/select_best_model.py"
 report = "python src/pipelines/generate_report.py"
+
+# ClearML tasks
+clearml-server = "docker-compose -f clearml-compose.yml up -d"
+clearml-stop = "docker-compose -f clearml-compose.yml down"
+clearml-compare = { cmd = "python src/clearml_utils/compare_experiments.py --project customer-churn-prediction", env = { CLEARML_CONFIG_FILE = "clearml.conf" } }
+clearml-models = { cmd = "python src/clearml_utils/model_registry.py --project customer-churn-prediction --action list", env = { CLEARML_CONFIG_FILE = "clearml.conf" } }
+clearml-pipeline = { cmd = "python src/clearml_utils/pipeline.py --project customer-churn-prediction", env = { CLEARML_CONFIG_FILE = "clearml.conf" } }
 
 [dependencies]
 python = ">=3.10,<3.13"
@@ -66,3 +76,4 @@ omegaconf = ">=2.3.0,<3.0"
 pydantic = ">=2.0.0,<3.0"
 pyyaml = ">=6.0.0,<7.0"
 joblib = ">=1.3.0,<2.0"
+clearml = ">=1.14.0,<2.0"

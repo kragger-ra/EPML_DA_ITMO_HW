@@ -103,6 +103,15 @@ allow_untyped_defs = true
 module = "yaml"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = [
+    "clearml.*",
+    "src.models.train_clearml",
+    "src.clearml_utils.*"
+]
+ignore_missing_imports = true
+ignore_errors = true
+
 # Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]

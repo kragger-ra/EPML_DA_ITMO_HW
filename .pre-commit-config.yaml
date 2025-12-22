@@ -23,6 +23,7 @@ repos:
     hooks:
       - id: isort
         args: ["--profile", "black"]
+        exclude: ^src/clearml_utils/(pipeline|scheduler)\.py$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.9

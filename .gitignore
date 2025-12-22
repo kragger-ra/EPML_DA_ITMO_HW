@@ -110,6 +110,8 @@ reports/notifications/*
 reports/pipeline_report.md
 reports/predictions/*
 !reports/predictions/.gitkeep
+reports/clearml/*
+!reports/clearml/.gitkeep
 
 # Hydra outputs
 outputs/
@@ -123,6 +125,11 @@ logs/
 # Environment variables
 .env.local
 .env.*.local
+
+# ClearML
+clearml.conf
+clearml/
+.clearml/
 
 # OS
 Thumbs.db

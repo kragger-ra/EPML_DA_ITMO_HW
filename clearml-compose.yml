@@ -1,0 +1,111 @@
+version: '3.6'
+
+services:
+  apiserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-apiserver
+    restart: unless-stopped
+    volumes:
+      - ./clearml/logs:/var/log/clearml
+      - ./clearml/config:/opt/clearml/config
+      - ./clearml/data/fileserver:/mnt/fileserver
+    depends_on:
+      - mongodb
+      - elasticsearch
+      - redis
+    environment:
+      CLEARML_SERVER_TYPE: apiserver
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+      CLEARML_WEB_HOST: ${CLEARML_WEB_HOST:-localhost}:8080
+      CLEARML_API_HOST: ${CLEARML_API_HOST:-localhost}:8008
+      CLEARML_FILES_HOST: ${CLEARML_FILES_HOST:-localhost}:8081
+      CLEARML_ELASTIC_SERVICE_HOST: elasticsearch
+      CLEARML_ELASTIC_SERVICE_PORT: 9200
+      CLEARML_MONGODB_SERVICE_HOST: mongodb
+      CLEARML_MONGODB_SERVICE_PORT: 27017
+      CLEARML_REDIS_SERVICE_HOST: redis
+      CLEARML_REDIS_SERVICE_PORT: 6379
+    ports:
+      - "8008:8008"
+    networks:
+      - clearml
+
+  webserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-webserver
+    restart: unless-stopped
+    depends_on:
+      - apiserver
+    environment:
+      CLEARML_SERVER_TYPE: webserver
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+      CLEARML_API_HOST: ${CLEARML_API_HOST:-localhost}:8008
+    ports:
+      - "8080:80"
+    networks:
+      - clearml
+
+  fileserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-fileserver
+    restart: unless-stopped
+    volumes:
+      - ./clearml/data/fileserver:/mnt/fileserver
+    environment:
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+    ports:
+      - "8081:8081"
+    networks:
+      - clearml
+
+  mongodb:
+    image: mongo:4.4.29
+    container_name: clearml-mongodb
+    restart: unless-stopped
+    volumes:
+      - ./clearml/data/mongo/db:/data/db
+      - ./clearml/data/mongo/configdb:/data/configdb
+    ports:
+      - "27017:27017"
+    networks:
+      - clearml
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: clearml-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - bootstrap.memory_lock=true
+      - cluster.name=clearml
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.node_initial_primaries_recoveries=500
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./clearml/data/elastic:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - clearml
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: clearml-redis
+    restart: unless-stopped
+    volumes:
+      - ./clearml/data/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - clearml
+
+networks:
+  clearml:
+    driver: bridge

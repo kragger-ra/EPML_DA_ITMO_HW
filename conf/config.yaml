@@ -35,3 +35,10 @@ hydra:
   sweep:
     dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.num}
+
+clearml:
+  project_name: ${project.name}
+  enabled: true
+  api_server: http://localhost:8008
+  web_server: http://localhost:8080
+  files_server: http://localhost:8081
