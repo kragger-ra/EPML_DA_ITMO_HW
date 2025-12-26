@@ -189,7 +189,7 @@ pixi install
 
 ```bash
 docker build -t ds-project:hw2 .
-docker run -it --rm -v ${PWD}:/workspace ds-project:hw2
+docker run -it --rm -v "%cd%":/workspace ds-project:hw1
 ```
 
 ## 4. Структура проекта после HW_2
