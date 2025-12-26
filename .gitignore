@@ -34,7 +34,6 @@ venv.bak/
 
 # Pixi
 .pixi/
-pixi.lock
 
 # Poetry
 poetry.lock
@@ -97,6 +96,7 @@ models/best/*
 # MLflow - local storage
 mlruns/
 mlflow.db
+mlartifacts/
 catboost_info/
 params_temp.yaml
 
@@ -110,8 +110,6 @@ reports/notifications/*
 reports/pipeline_report.md
 reports/predictions/*
 !reports/predictions/.gitkeep
-reports/clearml/*
-!reports/clearml/.gitkeep
 
 # Hydra outputs
 outputs/
@@ -127,9 +125,14 @@ logs/
 .env.*.local
 
 # ClearML
-clearml.conf
-clearml/
+clearml/data/
+clearml/logs/
 .clearml/
+
+
+# Experiments
+experiments/*.csv
+!experiments/.gitkeep
 
 # OS
 Thumbs.db

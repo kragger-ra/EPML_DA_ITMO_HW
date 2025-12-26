@@ -54,7 +54,9 @@ def train(cfg: DictConfig) -> None:
 
     logger = task.get_logger()
 
-    setup_mlflow(cfg)
+    setup_mlflow(
+        tracking_uri=str(cfg.mlflow.tracking_uri), experiment_name=str(cfg.project.name)
+    )
 
     print("Loading data...")
     X_train = pd.read_csv("data/processed/X_train.csv")

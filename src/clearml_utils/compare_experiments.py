@@ -55,7 +55,7 @@ class ExperimentComparator:
         return {
             "task_id": task.id,
             "task_name": task.name,
-            "created": task.created,
+            "created": task.data.created,
             "model_type": params.get("model/type", "unknown"),
             "experiment": params.get("experiment/name", "unknown"),
             **metrics,

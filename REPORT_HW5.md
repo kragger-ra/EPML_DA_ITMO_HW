@@ -475,25 +475,7 @@ python src/clearml_utils/model_registry.py \
 - Distributed training support
 - Queue management
 
-## 10. Команды проверки
-
-```bash
-pixi install
-
-docker-compose -f clearml-compose-official.yml up -d
-docker-compose -f clearml-compose-official.yml ps
-
-pixi run train-clearml
-
-pixi run clearml-compare
-pixi run clearml-models
-
-open http://localhost:8080
-
-docker-compose -f clearml-compose-official.yml down
-```
-
-## 11. Результаты тестирования
+## 10. Результаты тестирования
 
 **Эксперименты:**
 - GradientBoosting_baseline: ROC-AUC = 0.8041
