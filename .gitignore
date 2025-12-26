@@ -54,7 +54,6 @@ htmlcov/
 dmypy.json
 
 # DVC
-/dvc.lock
 /.dvc/tmp
 /.dvc/cache
 
