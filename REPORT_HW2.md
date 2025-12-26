@@ -14,7 +14,7 @@ pixi install
 Инициализация DVC:
 
 ```bash
-.pixi/envs/default/python.exe -m dvc init
+.pixi\envs\default\python.exe -m dvc init
 ```
 
 ### Remote storage
@@ -22,7 +22,7 @@ pixi install
 Локальное хранилище: `N:\HW\dvc-storage`
 
 ```bash
-.pixi/envs/default/python.exe -m dvc remote add -d local "N:/HW/dvc-storage"
+.pixi\envs\default\python.exe -m dvc remote add -d local "N:\HW\dvc-storage"
 ```
 
 Конфигурация в `.dvc/config`:
@@ -40,15 +40,15 @@ pixi install
 
 Датасет: Telco Customer Churn (IBM)
 
-Скрипт загрузки: `src/data/download_data.py`
+Скрипт загрузки: `src\data\download_data.py`
 
 ```bash
-.pixi/envs/default/python.exe src/data/download_data.py
-.pixi/envs/default/python.exe -m dvc add data/raw/customer_churn.csv
-.pixi/envs/default/python.exe -m dvc push
+.pixi\envs\default\python.exe src\data\download_data.py
+.pixi\envs\default\python.exe -m dvc add data\raw\customer_churn.csv
+.pixi\envs\default\python.exe -m dvc push
 ```
 
-Создан файл `data/raw/customer_churn.csv.dvc`:
+Создан файл `data\raw\customer_churn.csv.dvc`:
 
 ```yaml
 outs:
@@ -126,8 +126,8 @@ features:
 Команды для просмотра:
 
 ```bash
-.pixi/envs/default/python.exe -m dvc metrics show
-.pixi/envs/default/python.exe -m dvc dag
+.pixi\envs\default\python.exe -m dvc metrics show
+.pixi\envs\default\python.exe -m dvc dag
 ```
 
 ![Metrics](screenshots/5.png)
@@ -137,10 +137,10 @@ features:
 Модель версионируется автоматически через outputs в `dvc.yaml`:
 
 ```bash
-.pixi/envs/default/python.exe -m dvc push
+.pixi\envs\default\python.exe -m dvc push
 ```
 
-Модель сохранена в `models/churn_model.pkl` и загружена в remote storage.
+Модель сохранена в `models\churn_model.pkl` и загружена в remote storage.
 
 ## 3. Воспроизводимость (2 балла)
 
@@ -165,16 +165,16 @@ git checkout HW_2
 pixi install
 
 # 3. Настроить DVC remote (если требуется)
-.pixi/envs/default/python.exe -m dvc remote modify local url <путь>
+.pixi\envs\default\python.exe -m dvc remote modify local url <путь>
 
 # 4. Загрузить данные
-.pixi/envs/default/python.exe -m dvc pull
+.pixi\envs\default\python.exe -m dvc pull
 
 # 5. Запустить pipeline
-.pixi/envs/default/python.exe -m dvc repro
+.pixi\envs\default\python.exe -m dvc repro
 
 # 6. Посмотреть результаты
-.pixi/envs/default/python.exe -m dvc metrics show
+.pixi\envs\default\python.exe -m dvc metrics show
 ```
 
 ### Тестирование воспроизводимости
