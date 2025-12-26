@@ -1,0 +1,7 @@
+model,status
+lightgbm,success
+xgboost,success
+catboost,success
+random_forest,success
+gradient_boosting,success
+logistic_regression,success

@@ -1,0 +1,37 @@
+defaults:
+  - model: lightgbm
+  - data: default
+  - training: default
+  - experiment: baseline
+  - _self_
+
+project:
+  name: customer-churn-prediction
+  version: "0.2.0"
+  seed: 42
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  models: models
+  metrics: metrics.json
+  reports: reports
+  mlruns: mlruns
+
+mlflow:
+  tracking_uri: file:./mlruns
+  experiment_name: ${project.name}
+  enabled: true
+  log_models: true
+  log_artifacts: true
+
+dvc:
+  enabled: true
+  remote: local
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

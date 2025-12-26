@@ -1,0 +1,7 @@
+name: baseline
+description: "Baseline experiment with default parameters"
+tags:
+  - baseline
+  - default
+parallel_jobs: 1
+cache_data: true

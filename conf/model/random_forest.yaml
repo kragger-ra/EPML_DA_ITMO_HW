@@ -1,0 +1,10 @@
+type: random_forest
+name: RandomForest
+params:
+  n_estimators: 100
+  max_depth: 10
+  min_samples_split: 5
+  min_samples_leaf: 2
+  max_features: sqrt
+  random_state: ${project.seed}
+  n_jobs: -1

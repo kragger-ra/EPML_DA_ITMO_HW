@@ -1,0 +1,19 @@
+dataset_name: customer_churn
+test_size: 0.2
+random_state: ${project.seed}
+features:
+  categorical:
+    - gender
+    - Partner
+    - Dependents
+    - PhoneService
+    - InternetService
+    - Contract
+  numerical:
+    - tenure
+    - MonthlyCharges
+    - TotalCharges
+target: Churn
+validation:
+  enabled: false
+  val_size: 0.2
