@@ -254,6 +254,9 @@ pixi run mlflow-ui
 pixi run dvc-metrics
 pixi run dvc-dag
 type reports\pipeline_report.md
+
+# 6/ Тесты
+pixi run python -m pytest tests/test_pipeline.py -v
 ```
 ## 6. Структура после HW_4
 
@@ -304,5 +307,5 @@ python src/data/download_data.py
 dvc repro
 pixi run mlflow-ui
 dvc dag
-pytest tests/test_pipeline.py -v
+pixi run python -m pytest tests/test_pipeline.py -v
 ```
