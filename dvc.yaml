@@ -1,7 +1,7 @@
 stages:
   # Stg1: Data Preprocessing
   preprocess:
-    cmd: python src/data/preprocess.py
+    cmd: set PYTHONPATH=. && python src/data/preprocess.py
     deps:
       - src/data/preprocess.py
       - data/raw/customer_churn.csv
@@ -20,7 +20,7 @@ stages:
 
   # Stg2: Model Training
   train:
-    cmd: python src/models/train_hydra.py
+    cmd: set PYTHONPATH=. && python src/models/train_hydra.py
     deps:
       - src/models/train_hydra.py
       - src/models/model_factory.py
@@ -41,7 +41,7 @@ stages:
 
   # Stg3: Train All Models
   train_all:
-    cmd: python src/pipelines/run_all_experiments.py
+    cmd: set PYTHONPATH=. && python src/pipelines/run_all_experiments.py
     deps:
       - src/pipelines/run_all_experiments.py
       - src/models/train_hydra.py
@@ -58,7 +58,7 @@ stages:
 
   # Stg4: Model Evaluation
   evaluate:
-    cmd: python src/pipelines/evaluate_models.py
+    cmd: set PYTHONPATH=. && python src/pipelines/evaluate_models.py
     deps:
       - src/pipelines/evaluate_models.py
       - metrics.json
@@ -70,7 +70,7 @@ stages:
 
   # Stg5: Select Best Model
   select_best:
-    cmd: python src/pipelines/select_best_model.py
+    cmd: set PYTHONPATH=. && python src/pipelines/select_best_model.py
     deps:
       - src/pipelines/select_best_model.py
       - reports/evaluation/best_model.json
@@ -82,9 +82,9 @@ stages:
       - models/churn_model.pkl:
           cache: true
 
-  # Stg: Report
+  # Stg6: Report
   report:
-    cmd: python src/pipelines/generate_report.py
+    cmd: set PYTHONPATH=. && python src/pipelines/generate_report.py
     deps:
       - src/pipelines/generate_report.py
       - models/churn_model.pkl
@@ -96,7 +96,7 @@ stages:
 
   # Stg7: Notification
   notify:
-    cmd: python src/pipelines/notify.py
+    cmd: set PYTHONPATH=. && python src/pipelines/notify.py
     deps:
       - src/pipelines/notify.py
       - reports/pipeline_report.md

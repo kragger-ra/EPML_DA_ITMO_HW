@@ -16,30 +16,20 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# Virtual environments
-.env
-.venv
-env/
+# Virtual Environments
+.pixi/
+.venv/
 venv/
 ENV/
-env.bak/
-venv.bak/
+env/
+.env
 
-# Pixi
-.pixi/
-pixi.lock
-
-# Poetry
-poetry.lock
-
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -48,81 +38,112 @@ poetry.lock
 .DS_Store
 
 # Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb_checkpoints/
-
-# IPython
-profile_default/
-ipython_config.py
+.ipynb_checkpoints/
+*.ipynb_checkpoints
 
 # Testing
 .pytest_cache/
 .coverage
-.coverage.*
 htmlcov/
 .tox/
 .nox/
-coverage.xml
-*.cover
-.hypothesis/
 
-# MyPy
+# Type checking
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Ruff
-.ruff_cache/
+# DVC
+/dvc.lock
+/.dvc/tmp
+/.dvc/cache
 
-# Data Science
+# Data (managed by DVC)
 data/raw/*
 !data/raw/.gitkeep
-!data/raw/*.dvc
 data/processed/*
 !data/processed/.gitkeep
 data/interim/*
 !data/interim/.gitkeep
 
-# Models
+# Models (managed by DVC)
 models/*.pkl
 models/*.h5
 models/*.pt
-models/*.pth
-models/*.onnx
 models/*.joblib
 !models/.gitkeep
-models/best/*
+models/best/*.pkl
 !models/best/.gitkeep
 
-# MLflow - local storage
+# MLflow
 mlruns/
-mlflow.db
-catboost_info/
-params_temp.yaml
+mlartifacts/
 
-# Reports
+# Hydra
+outputs/
+multirun/
+.hydra/
+
+# Reports and outputs
 reports/figures/*
 !reports/figures/.gitkeep
-reports/evaluation/*
+reports/evaluation/*.csv
+reports/evaluation/*.json
 !reports/evaluation/.gitkeep
 reports/notifications/*
 !reports/notifications/.gitkeep
-reports/pipeline_report.md
 reports/predictions/*
 !reports/predictions/.gitkeep
+reports/pipeline_report.md
+
+# Experiments
+experiments/pipeline_results.csv
+experiments/*.csv
+!experiments/.gitkeep
+
+# Metrics (generated)
+metrics.json
+
+# Logs
+*.log
+logs/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# ClearML data (HW_5)
+clearml/data/
+clearml/logs/
+
+# MLflow database
+mlflow.db
+*.db
+
+# CatBoost info
+catboost_info/
 
 # Hydra outputs
 outputs/
 multirun/
 .hydra/
 
-# Logs
-*.log
-logs/
+# Models
+models/best/
+models/*.pkl
+!models/.gitkeep
 
-# Environment variables
-.env.local
-.env.*.local
+# Reports
+reports/evaluation/
+reports/notifications/
+reports/predictions/
 
-# OS
-Thumbs.db
+# Experiments
+experiments/*.csv
+!experiments/.gitkeep

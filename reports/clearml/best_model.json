@@ -1,0 +1,8 @@
+{
+  "task_id": "5818041653f64f63a738b23b0837894b",
+  "task_name": "CatBoost_baseline",
+  "model_type": "catboost",
+  "model_name": "CatBoost",
+  "metric": "Metrics/roc_auc",
+  "metric_value": 0.8600709438323975
+}

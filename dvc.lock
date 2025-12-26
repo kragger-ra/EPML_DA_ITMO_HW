@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   preprocess:
-    cmd: python src/data/preprocess.py
+    cmd: set PYTHONPATH=. && python src/data/preprocess.py
     deps:
     - path: data/raw/customer_churn.csv
       hash: md5
@@ -46,8 +46,27 @@ stages:
       md5: 926d3a60b321ffecd9e602d5d259a705
       size: 16909
   train:
-    cmd: pixi run python src/models/train.py
+    cmd: set PYTHONPATH=. && python src/models/train_hydra.py
     deps:
+    - path: conf/config.yaml
+      hash: md5
+      md5: 62c911aedcb2dffe5c70cc0b39cea17b
+      size: 640
+    - path: conf/data
+      hash: md5
+      md5: 5d2dc14008dd865e96da6eab1f3e12dc.dir
+      size: 324
+      nfiles: 1
+    - path: conf/model
+      hash: md5
+      md5: 480e6988dc3ef911a4b63797c5379c5c.dir
+      size: 1209
+      nfiles: 6
+    - path: conf/training
+      hash: md5
+      md5: ae0ae28d8c27413706ede4f778a1e200.dir
+      size: 270
+      nfiles: 1
     - path: data/processed/X_test.csv
       hash: md5
       md5: 3547689e7fed2a9723c920c8a7229674
@@ -64,29 +83,150 @@ stages:
       hash: md5
       md5: 926d3a60b321ffecd9e602d5d259a705
       size: 16909
-    - path: src/models/train.py
+    - path: src/models/model_factory.py
       hash: md5
-      md5: 2e4432eb493c53f3793c4f15483fbbc7
-      size: 1785
-    params:
-      params.yaml:
-        model:
-          type: lightgbm
-          params:
-            num_leaves: 31
-            learning_rate: 0.05
-            n_estimators: 100
-            max_depth: -1
-            min_child_samples: 20
-            subsample: 0.8
-            colsample_bytree: 0.8
-            random_state: 42
+      md5: 2d75dea26ea251af221dded3eba17fe4
+      size: 3207
+    - path: src/models/train_hydra.py
+      hash: md5
+      md5: f736270aa17305185c8c02fff238aafc
+      size: 6704
     outs:
     - path: metrics.json
       hash: md5
-      md5: 9e27eada58631888d0de7cecb8844c3f
-      size: 113
+      md5: 9f175d75dfe850438e894407ba04a330
+      size: 186
+    - path: models/lightgbm_model.pkl
+      hash: md5
+      md5: e987b0d3bdee143eb90b71446f9f67a0
+      size: 344788
+  train_all:
+    cmd: set PYTHONPATH=. && python src/pipelines/run_all_experiments.py
+    deps:
+    - path: conf/config.yaml
+      hash: md5
+      md5: 62c911aedcb2dffe5c70cc0b39cea17b
+      size: 640
+    - path: conf/model
+      hash: md5
+      md5: 480e6988dc3ef911a4b63797c5379c5c.dir
+      size: 1209
+      nfiles: 6
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: 3547689e7fed2a9723c920c8a7229674
+      size: 39991
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: 638953dc619701e4f724c0388f6d5dca
+      size: 159965
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: 201501840c586317ad0f805ea0d84683
+      size: 4234
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 926d3a60b321ffecd9e602d5d259a705
+      size: 16909
+    - path: src/models/model_factory.py
+      hash: md5
+      md5: 2d75dea26ea251af221dded3eba17fe4
+      size: 3207
+    - path: src/models/train_hydra.py
+      hash: md5
+      md5: f736270aa17305185c8c02fff238aafc
+      size: 6704
+    - path: src/pipelines/run_all_experiments.py
+      hash: md5
+      md5: 360bc30bd329a6a4a2b3c679ab8c70aa
+      size: 2707
+    outs:
+    - path: experiments/pipeline_results.csv
+      hash: md5
+      md5: 2ccb868bd24a33d6030b15486d9b04e0
+      size: 146
+  evaluate:
+    cmd: set PYTHONPATH=. && python src/pipelines/evaluate_models.py
+    deps:
+    - path: metrics.json
+      hash: md5
+      md5: 5b351a78f235226afba3b8a6610a625e
+      size: 185
+    - path: src/pipelines/evaluate_models.py
+      hash: md5
+      md5: d46c3483703bc5440494ca8d0f3f3754
+      size: 4586
+    outs:
+    - path: reports/evaluation/best_model.json
+      hash: md5
+      md5: 01e3d0970440f551c189486285cb3f9c
+      size: 195
+    - path: reports/evaluation/model_comparison.csv
+      hash: md5
+      md5: f318d0b96bb0147f292354e05a980274
+      size: 2396
+  select_best:
+    cmd: set PYTHONPATH=. && python src/pipelines/select_best_model.py
+    deps:
+    - path: reports/evaluation/best_model.json
+      hash: md5
+      md5: 01e3d0970440f551c189486285cb3f9c
+      size: 195
+    - path: src/pipelines/select_best_model.py
+      hash: md5
+      md5: dbb2faf5f483b6ca871f8bc7d46e96fe
+      size: 3009
+    outs:
+    - path: models/best/best_model.pkl
+      hash: md5
+      md5: 285a38e21a5f48d1e69637804f120858
+      size: 107387
+    - path: models/best/model_metadata.json
+      hash: md5
+      md5: 36698cfde6a5427588cdbd8a84e3c439
+      size: 282
     - path: models/churn_model.pkl
       hash: md5
-      md5: d72bd5131ed6990cbd678b9024f0d3e2
-      size: 344740
+      md5: 285a38e21a5f48d1e69637804f120858
+      size: 107387
+  report:
+    cmd: set PYTHONPATH=. && python src/pipelines/generate_report.py
+    deps:
+    - path: metrics.json
+      hash: md5
+      md5: 5b351a78f235226afba3b8a6610a625e
+      size: 185
+    - path: models/churn_model.pkl
+      hash: md5
+      md5: 285a38e21a5f48d1e69637804f120858
+      size: 107387
+    - path: reports/evaluation/best_model.json
+      hash: md5
+      md5: 01e3d0970440f551c189486285cb3f9c
+      size: 195
+    - path: src/pipelines/generate_report.py
+      hash: md5
+      md5: 94a938fe7bd0f80b02c1ce58f18913af
+      size: 4488
+    outs:
+    - path: reports/pipeline_report.md
+      hash: md5
+      md5: d3248a9aecab21f94d08df0f7d515ba6
+      size: 1235
+  notify:
+    cmd: set PYTHONPATH=. && python src/pipelines/notify.py
+    deps:
+    - path: reports/pipeline_report.md
+      hash: md5
+      md5: d3248a9aecab21f94d08df0f7d515ba6
+      size: 1235
+    - path: src/pipelines/notify.py
+      hash: md5
+      md5: 8a5ddb5a93f2cbaf384990b769b70148
+      size: 3362
+    outs:
+    - path: reports/notifications
+      hash: md5
+      md5: 429adf6389582549f3096ab2456cf8a7.dir
+      size: 489
+      nfiles: 1

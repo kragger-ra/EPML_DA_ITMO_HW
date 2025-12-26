@@ -14,25 +14,25 @@ typecheck = "mypy src/"
 security = "bandit -r src/"
 
 # DVC Pipeline tasks
-dvc-pull = "dvc pull"
-dvc-push = "dvc push"
-dvc-repro = "dvc repro"
-dvc-dag = "dvc dag"
-dvc-status = "dvc status"
-dvc-metrics = "dvc metrics show"
-dvc-params = "dvc params diff"
+dvc-pull = "python -m dvc pull"
+dvc-push = "python -m dvc push"
+dvc-repro = "python -m dvc repro"
+dvc-dag = "python -m dvc dag"
+dvc-status = "python -m dvc status"
+dvc-metrics = "python -m dvc metrics show"
+dvc-params = "python -m dvc params diff"
 
 # MLflow tasks
-mlflow-ui = "mlflow ui --backend-store-uri file:./mlruns"
+mlflow-ui = "python -m mlflow ui --backend-store-uri file:./mlruns"
 
 # Hydra-based training
 train = "python src/models/train_hydra.py"
 train-all = "python src/pipelines/run_all_experiments.py"
 
 # Pipeline execution
-pipeline = "dvc repro"
-pipeline-force = "dvc repro --force"
-pipeline-vis = "dvc dag"
+pipeline = "python -m dvc repro"
+pipeline-force = "python -m dvc repro --force"
+pipeline-vis = "python -m dvc dag"
 
 # Evaluation and reporting
 evaluate = "python src/pipelines/evaluate_models.py"

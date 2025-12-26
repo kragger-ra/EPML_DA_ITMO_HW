@@ -237,30 +237,24 @@ pixi run mlflow-ui  # http://127.0.0.1:5000
 - `.gitignore` - директории
 
 ## 5. Воспроизведение
-
 ```bash
+# 1. Установка
 pixi install
-python src/data/download_data.py
-dvc repro
+
+# 2. Данные
+pixi run python src/data/download_data.py
+
+# 3. Весь pipeline
+pixi run pipeline
+
+# 4. MLflow UI (в отдельном терминале)
 pixi run mlflow-ui
+
+# 5. Просмотр результатов
+pixi run dvc-metrics
+pixi run dvc-dag
+type reports\pipeline_report.md
 ```
-
-### Hydra примеры
-
-```bash
-python src/models/train_hydra.py model=xgboost
-python src/models/train_hydra.py model=lightgbm model.params.n_estimators=200
-python src/models/train_hydra.py --multirun model=lightgbm,xgboost,catboost
-```
-
-### DVC примеры
-
-```bash
-dvc repro train
-dvc repro train_all
-dvc repro evaluate
-```
-
 ## 6. Структура после HW_4
 
 ```
