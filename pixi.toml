@@ -1,0 +1,32 @@
+[workspace]
+name = "ds-project"
+version = "0.1.0"
+description = "Data Science project with modern engineering practices"
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64"]
+
+[tasks]
+jupyter = "jupyter notebook"
+test = "pytest tests/"
+lint = "ruff check src/ tests/"
+format = "black src/ tests/ && isort src/ tests/"
+typecheck = "mypy src/"
+security = "bandit -r src/"
+
+[dependencies]
+python = ">=3.10,<3.13"
+numpy = ">=1.24.0,<2.0"
+pandas = ">=2.0.0,<3.0"
+scikit-learn = ">=1.3.0,<2.0"
+matplotlib = ">=3.7.0,<4.0"
+seaborn = ">=0.12.0,<1.0"
+jupyter = ">=1.0.0"
+notebook = ">=7.0.0"
+black = ">=23.12.0"
+isort = ">=5.13.0"
+ruff = ">=0.1.9"
+mypy = ">=1.7.0"
+bandit = ">=1.7.5"
+pre-commit = ">=3.6.0"
+pytest = ">=7.4.0"
+pytest-cov = ">=4.1.0"
